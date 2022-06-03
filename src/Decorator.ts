@@ -1,6 +1,6 @@
 import { RUNNING } from './constants';
 import Node from './Node';
-import { Blackboard, RunCallback, DecoratorConfig, RunConfig, DecoratorBlueprint } from './types';
+import { Blackboard, RunCallback, DecoratorConfig, RunConfig, DecoratorBlueprint, Status } from './types';
 
 export default class Decorator extends Node {
   config!: DecoratorConfig;
@@ -27,7 +27,7 @@ export default class Decorator extends Node {
           rerun,
           introspector,
           registryLookUp
-        });
+        }) as Status;
       },
       blackboard,
       this.config

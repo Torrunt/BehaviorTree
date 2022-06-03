@@ -1,7 +1,7 @@
 import { RUNNING } from './constants';
 import BranchNode from './BranchNode';
 import Node from './Node';
-import { Blackboard, RunConfig, StatusWithState } from './types';
+import { Blackboard, RunConfig, StatusWithState, Status } from './types';
 import { isRunning } from './helper';
 
 export default class Random extends BranchNode {
@@ -22,7 +22,7 @@ export default class Random extends BranchNode {
       this.blueprint.end(blackboard);
     }
     if (introspector) {
-      const debugResult = running ? RUNNING : result;
+      const debugResult = running ? RUNNING : result as Status;
       introspector.wrapLast(1, this, debugResult, blackboard);
     }
     if (running) {
