@@ -1,10 +1,11 @@
 import { RUNNING } from './constants';
 import Node from './Node';
-import { Blackboard, RunCallback, DecoratorConfig, RunConfig, DecoratorBlueprint, Status } from './types';
+import { Blackboard, RunCallback, DecoratorConfig, RunConfig, DecoratorBlueprint, Status, ObserverAborts } from './types';
 
-export default class Decorator extends Node {
+export class Decorator extends Node {
   config!: DecoratorConfig;
   nodeType = 'Decorator';
+  observerAborts = ObserverAborts.None;
 
   constructor({ config = {}, ...props }: DecoratorBlueprint = { config: {} }) {
     super(props);
@@ -46,3 +47,10 @@ export default class Decorator extends Node {
     this.config = config;
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const IsDecorator = (object: any): object is Decorator => {
+  return 'observerAborts' in object;
+};
+
+export default Decorator;

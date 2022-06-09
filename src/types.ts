@@ -69,3 +69,14 @@ export interface ImportableJson {
   node?: ImportableJson;
   nodes?: ImportableJson[];
 }
+
+export enum ObserverAborts {
+  /** Do not abort anything. */
+  None,
+  /** Abort self and any sub-trees running under this node. */
+  Self,
+  /** Abort any nodes to the right of this node. */
+  LowerPriority,
+  /** Abort self, any sub-trees running under this node, and any nodes to the right of this node. */
+  Both
+}
