@@ -27,8 +27,8 @@ export default class Node {
     return result;
   }
 
-  abort(blackboard: Blackboard) {
-    this.blueprint.abort(blackboard);
+  abort(blackboard: Blackboard, { registryLookUp = (x) => x as Node, lastRun }: RunConfig = {}) {
+    this.blueprint.abort(blackboard, { registryLookUp, lastRun });
   }
 
   get name(): string | undefined {

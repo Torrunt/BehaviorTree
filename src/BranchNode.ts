@@ -59,9 +59,7 @@ export default class BranchNode extends Node {
         } else {
           if (startingIndex !== 0) {
             const activeNode = registryLookUp(this.nodes[startingIndex]);
-            console.log(`${startingIndex}  ${node.nodeType}  ${JSON.stringify(lastState)} | ${JSON.stringify(currentState)}`);
-            console.log(`abort ${activeNode.nodeType}`);
-            activeNode.abort(blackboard);
+            activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
           }
           startingIndex = 0;
         }
@@ -93,5 +91,15 @@ export default class BranchNode extends Node {
       introspector.wrapLast(Math.min(currentIndex + 1, this.numNodes), this, debugResult, blackboard);
     }
     return overallResult === RUNNING ? { total: overallResult, state: results } : overallResult;
+  }
+
+  abort(blackboard: Blackboard = {}, { lastRun, registryLookUp = (x) => x as Node }: RunConfig = {}) {
+    const lastRunStates: Array<RunResult> = (typeof lastRun === 'object' && lastRun.state) || [];
+    const startingIndex = Math.max(
+      lastRunStates.findIndex((x) => isRunning(x)),
+      0
+    );
+    const node = registryLookUp(this.nodes[startingIndex]);
+    node.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
   }
 }
