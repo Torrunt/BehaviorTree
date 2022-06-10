@@ -4,14 +4,15 @@ import { Blackboard, Blueprint, MinimalBlueprint, RunConfig, RunResult } from '.
 const NOOP_RUN = () => false;
 const NOOP_START = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 const NOOP_END = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
+const NOOP_ABORT = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 
 export default class Node {
   _name?: string;
   blueprint: Blueprint;
   nodeType = 'Node';
 
-  constructor({ run = NOOP_RUN, start = NOOP_START, end = NOOP_END, ...props }: MinimalBlueprint) {
-    this.blueprint = { run, start, end, ...props };
+  constructor({ run = NOOP_RUN, start = NOOP_START, end = NOOP_END, abort = NOOP_ABORT, ...props }: MinimalBlueprint) {
+    this.blueprint = { run, start, end, abort, ...props };
   }
 
   run(blackboard: Blackboard, { introspector, rerun = false, registryLookUp = (x) => x as Node, ...config }: RunConfig = {}): RunResult {
@@ -24,6 +25,10 @@ export default class Node {
       introspector.push(this, result, blackboard);
     }
     return result;
+  }
+
+  abort(blackboard: Blackboard) {
+    this.blueprint.abort(blackboard);
   }
 
   get name(): string | undefined {

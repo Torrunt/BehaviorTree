@@ -1,4 +1,4 @@
-import { RUNNING } from './constants';
+import { FAILURE, RUNNING, SUCCESS } from './constants';
 import Node from './Node';
 import { Blackboard, RunCallback, DecoratorConfig, RunConfig, DecoratorBlueprint, Status, ObserverAborts } from './types';
 
@@ -12,8 +12,13 @@ export class Decorator extends Node {
     this.setConfig(config);
   }
 
-  decorate(run: RunCallback, blackboard: Blackboard, config: DecoratorConfig) {
+  condition(blackboard: Blackboard) {
     // This method should be overridden to make it useful
+    return SUCCESS;
+  }
+
+  decorate(run: RunCallback, blackboard: Blackboard, config: DecoratorConfig) {
+    if (!this.condition(blackboard)) return FAILURE;
     return run(run, blackboard, config);
   }
 

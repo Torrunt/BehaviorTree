@@ -15,6 +15,7 @@ export type DecoratorConfig = Record<string, any>;
 export type EndCallback = (...args: any[]) => void;
 export type RunCallback = (...args: any[]) => Status;
 export type StartCallback = (...args: any[]) => void;
+export type AbortCallback = (...args: any[]) => void;
 export type RegistryLookUp = (node: NodeOrRegistration) => Node;
 
 export interface IntrospectionResult {
@@ -32,6 +33,7 @@ export interface MinimalBlueprint {
   introspector?: Introspector;
   run?: RunCallback;
   start?: StartCallback;
+  abort?: AbortCallback;
   nodes?: NodeOrRegistration[];
   node?: NodeOrRegistration;
 }
@@ -41,6 +43,7 @@ export interface Blueprint {
   introspector?: Introspector;
   run: RunCallback;
   start: StartCallback;
+  abort: AbortCallback;
   nodes?: NodeOrRegistration[];
   node?: NodeOrRegistration;
 }
