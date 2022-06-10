@@ -60,8 +60,8 @@ export default class BranchNode extends Node {
           if (startingIndex !== 0) {
             const activeNode = registryLookUp(this.nodes[startingIndex]);
             activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
+            startingIndex = 0;
           }
-          startingIndex = 0;
         }
       }
 

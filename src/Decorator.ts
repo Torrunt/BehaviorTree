@@ -12,6 +12,7 @@ export class Decorator extends Node {
     this.setConfig(config);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   condition(blackboard: Blackboard) {
     // This method should be overridden to make it useful
     return SUCCESS;
@@ -41,6 +42,11 @@ export class Decorator extends Node {
 
     if (result !== RUNNING) {
       this.blueprint.end(blackboard);
+
+      // Call end() on node this decorator wraps
+      if ((result === FAILURE && this.blueprint.node) !== undefined) {
+        (this.blueprint.node as Node).blueprint.end(blackboard);
+      }
     }
     if (introspector) {
       introspector.wrapLast(runCount, this, result, blackboard);
