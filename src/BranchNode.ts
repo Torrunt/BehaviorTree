@@ -36,14 +36,12 @@ export default class BranchNode extends Node {
     let currentIndex = 0;
     for (; currentIndex < this.numNodes; ++currentIndex) {
       let observeredDecorator = false;
-      if (currentIndex < startingIndex) {
-        if (this.observedDecorators.has(currentIndex)) {
-          observeredDecorator = true;
-        } else {
-          // Keep last result
-          results[currentIndex] = lastRunStates[currentIndex];
-          continue;
-        }
+      if (rerun && this.observedDecorators.has(currentIndex)) {
+        observeredDecorator = true;
+      } else if (currentIndex < startingIndex) {
+        // Keep last result
+        results[currentIndex] = lastRunStates[currentIndex];
+        continue;
       }
 
       const node = registryLookUp(this.nodes[currentIndex]);
@@ -53,22 +51,22 @@ export default class BranchNode extends Node {
         const lastState = this.observedDecorators.get(currentIndex);
         const currentState = node.condition(blackboard);
         if (lastState === currentState) {
-          // observered decorator hasn't changed - Keep last result
-          results[currentIndex] = lastRunStates[currentIndex];
-          continue;
-        } else {
-          if (startingIndex !== 0) {
-            const activeNode = registryLookUp(this.nodes[startingIndex]);
-            activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
-            startingIndex = 0;
+          if (rerun && currentIndex < startingIndex) {
+            // observered decorator hasn't changed - Keep last result
+            results[currentIndex] = lastRunStates[currentIndex];
+            continue;
           }
+        } else {
+          const activeNode = registryLookUp(this.nodes[startingIndex]);
+          activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
+          startingIndex = 0;
         }
       }
 
       const result = node.run(blackboard, { lastRun: lastRunStates[currentIndex], introspector, rerun, registryLookUp });
       results[currentIndex] = result;
 
-      if (IsDecorator(node) && node.observerAborts >= ObserverAborts.LowerPriority) {
+      if (IsDecorator(node) && node.observerAborts > ObserverAborts.None) {
         this.observedDecorators.set(currentIndex, node.condition(blackboard));
       }
 
@@ -94,6 +92,9 @@ export default class BranchNode extends Node {
   }
 
   abort(blackboard: Blackboard = {}, { lastRun, registryLookUp = (x) => x as Node }: RunConfig = {}) {
+    super.abort(blackboard, { registryLookUp, lastRun });
+
+    // Call abort() on currently active noed
     const lastRunStates: Array<RunResult> = (typeof lastRun === 'object' && lastRun.state) || [];
     const startingIndex = Math.max(
       lastRunStates.findIndex((x) => isRunning(x)),

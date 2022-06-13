@@ -78,8 +78,8 @@ export enum ObserverAborts {
   None,
   /** Abort self and any sub-trees running under this node. */
   Self,
-  /** Abort any nodes to the right of this node. */
+  /** Abort any nodes after this node. */
   LowerPriority,
-  /** Abort self, any sub-trees running under this node, and any nodes to the right of this node. */
+  /** Abort self, any sub-trees running under this node, and any nodes after this node. */
   Both
 }

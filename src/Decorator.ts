@@ -18,8 +18,14 @@ export class Decorator extends Node {
     return SUCCESS;
   }
 
-  decorate(run: RunCallback, blackboard: Blackboard, config: DecoratorConfig) {
-    if (!this.condition(blackboard)) return FAILURE;
+  decorate(run: RunCallback, blackboard: Blackboard, config: DecoratorConfig, rerun?: boolean) {
+    if (
+      !this.condition(blackboard) &&
+      (!rerun || this.observerAborts === ObserverAborts.Self || this.observerAborts === ObserverAborts.Both)
+    ) {
+      return FAILURE;
+    }
+
     return run(run, blackboard, config);
   }
 
@@ -37,7 +43,8 @@ export class Decorator extends Node {
         }) as Status;
       },
       blackboard,
-      this.config
+      this.config,
+      rerun
     );
 
     if (result !== RUNNING) {
@@ -52,6 +59,15 @@ export class Decorator extends Node {
       introspector.wrapLast(runCount, this, result, blackboard);
     }
     return result;
+  }
+
+  abort(blackboard: Blackboard, { registryLookUp = (x) => x as Node, lastRun }: RunConfig = {}) {
+    super.abort(blackboard, { registryLookUp, lastRun });
+
+    // call abort() on node this decorator aborts
+    if (this.blueprint.node !== undefined) {
+      (this.blueprint.node as Node).abort(blackboard, { registryLookUp, lastRun });
+    }
   }
 
   setConfig(config: DecoratorConfig) {
