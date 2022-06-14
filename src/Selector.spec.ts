@@ -250,6 +250,7 @@ describe('Selector', () => {
         selector = new Selector({
           start: function (blackboard) {
             ++blackboard.start;
+            return SUCCESS;
           },
           end: function (blackboard) {
             ++blackboard.end;

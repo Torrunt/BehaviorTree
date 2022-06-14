@@ -30,7 +30,12 @@ export class Decorator extends Node {
   }
 
   run(blackboard: Blackboard, { introspector, rerun, registryLookUp = (x) => x as Node, ...config }: RunConfig = {}) {
-    if (!rerun) this.blueprint.start(blackboard);
+    if (!rerun || !this.ranStart) {
+      this.ranStart = true;
+      const startResult = this.blueprint.start(blackboard);
+      if (startResult === FAILURE) return startResult;
+    }
+
     let runCount = 0;
     const result = this.decorate(
       () => {
@@ -64,7 +69,7 @@ export class Decorator extends Node {
   abort(blackboard: Blackboard, { registryLookUp = (x) => x as Node, lastRun }: RunConfig = {}) {
     super.abort(blackboard, { registryLookUp, lastRun });
 
-    // call abort() on node this decorator aborts
+    // call abort() on node this decorator wraps
     if (this.blueprint.node !== undefined) {
       (this.blueprint.node as Node).abort(blackboard, { registryLookUp, lastRun });
     }

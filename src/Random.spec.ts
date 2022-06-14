@@ -89,6 +89,7 @@ describe('Random', () => {
     const random = new Random({
       start: function (blackboard) {
         ++blackboard.start;
+        return SUCCESS;
       },
       end: function (blackboard) {
         ++blackboard.end;

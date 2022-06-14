@@ -1,4 +1,4 @@
-import { SUCCESS, RUNNING } from './constants';
+import { SUCCESS, RUNNING, FAILURE } from './constants';
 import { IsDecorator } from './Decorator';
 import { isRunning } from './helper';
 import Node from './Node';
@@ -24,7 +24,12 @@ export default class BranchNode extends Node {
   }
 
   run(blackboard: Blackboard = {}, { lastRun, introspector, rerun, registryLookUp = (x) => x as Node }: RunConfig = {}) {
-    if (!rerun) this.blueprint.start(blackboard);
+    if (!rerun || !this.ranStart) {
+      this.ranStart = true;
+      const startResult = this.blueprint.start(blackboard);
+      if (startResult === FAILURE) return startResult;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let overallResult: Status | any = this.START_CASE;
     const results: Array<RunResult> = [];
@@ -94,7 +99,7 @@ export default class BranchNode extends Node {
   abort(blackboard: Blackboard = {}, { lastRun, registryLookUp = (x) => x as Node }: RunConfig = {}) {
     super.abort(blackboard, { registryLookUp, lastRun });
 
-    // Call abort() on currently active noed
+    // Call abort() on currently active node
     const lastRunStates: Array<RunResult> = (typeof lastRun === 'object' && lastRun.state) || [];
     const startingIndex = Math.max(
       lastRunStates.findIndex((x) => isRunning(x)),

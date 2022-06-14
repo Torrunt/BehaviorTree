@@ -31,6 +31,7 @@ describe('Decorator', () => {
     const decoratedTask = new Decorator({
       start: function (b) {
         ++b.start;
+        return SUCCESS;
       },
       end: function (b) {
         ++b.end;

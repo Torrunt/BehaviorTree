@@ -1,8 +1,8 @@
-import { RUNNING } from './constants';
+import { FAILURE, RUNNING } from './constants';
 import { Blackboard, Blueprint, MinimalBlueprint, RunConfig, RunResult } from './types';
 
 const NOOP_RUN = () => false;
-const NOOP_START = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
+const NOOP_START = () => true; // eslint-disable-line @typescript-eslint/no-empty-function
 const NOOP_END = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 const NOOP_ABORT = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 
@@ -10,13 +10,18 @@ export default class Node {
   _name?: string;
   blueprint: Blueprint;
   nodeType = 'Node';
+  ranStart = false;
 
   constructor({ run = NOOP_RUN, start = NOOP_START, end = NOOP_END, abort = NOOP_ABORT, ...props }: MinimalBlueprint) {
     this.blueprint = { run, start, end, abort, ...props };
   }
 
   run(blackboard: Blackboard, { introspector, rerun = false, registryLookUp = (x) => x as Node, ...config }: RunConfig = {}): RunResult {
-    if (!rerun) this.blueprint.start(blackboard);
+    if (!rerun || !this.ranStart) {
+      this.ranStart = true;
+      const startResult = this.blueprint.start(blackboard);
+      if (startResult === FAILURE) return startResult;
+    }
     const result = this.blueprint.run(blackboard, { ...config, rerun, registryLookUp });
     if (result !== RUNNING) {
       this.blueprint.end(blackboard);

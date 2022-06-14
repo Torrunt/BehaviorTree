@@ -22,7 +22,12 @@ export default class Parallel extends BranchNode {
   }
 
   run(blackboard: Blackboard = {}, { lastRun, introspector, rerun, registryLookUp = (x) => x as Node }: ParallelRunConfig = {}) {
-    if (!rerun) this.blueprint.start(blackboard);
+    if (!rerun || !this.ranStart) {
+      this.ranStart = true;
+      const startResult = this.blueprint.start(blackboard);
+      if (startResult === FAILURE) return startResult;
+    }
+
     const results: Array<RunResult> = [];
     for (let currentIndex = 0; currentIndex < this.numNodes; ++currentIndex) {
       const lastRunForIndex = lastRun && (lastRun as StatusWithState).state[currentIndex];
@@ -53,5 +58,14 @@ export default class Parallel extends BranchNode {
     }
     const running = !!results.find((x) => isRunning(x));
     return running ? { total: RUNNING, state: results } : SUCCESS;
+  }
+
+  abort(blackboard: Blackboard, { registryLookUp = (x) => x as Node, lastRun }: ParallelRunConfig = {}) {
+    super.abort(blackboard, { registryLookUp, lastRun });
+
+    // call abort() on parallel nodes
+    for (const n of this.nodes) {
+      (n as Node).abort(blackboard, { registryLookUp, lastRun });
+    }
   }
 }
