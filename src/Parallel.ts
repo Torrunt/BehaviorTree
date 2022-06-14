@@ -61,7 +61,7 @@ export default class Parallel extends BranchNode {
   }
 
   abort(blackboard: Blackboard, { registryLookUp = (x) => x as Node, lastRun }: ParallelRunConfig = {}) {
-    super.abort(blackboard, { registryLookUp, lastRun });
+    this.blueprint.abort(blackboard, { registryLookUp, lastRun });
 
     // call abort() on parallel nodes
     for (const n of this.nodes) {
