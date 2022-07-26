@@ -19,6 +19,7 @@ describe('Introspector', () => {
     name: 'The Task',
     start: function (blackboard: Blackboard) {
       ++blackboard.start;
+      return SUCCESS;
     },
     run: function (blackboard: Blackboard) {
       ++blackboard.run;

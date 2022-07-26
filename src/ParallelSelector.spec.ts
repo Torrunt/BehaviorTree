@@ -161,6 +161,7 @@ describe('ParallelSelector', () => {
     const switchTask = new Task({
       start: function (blackboard) {
         ++blackboard.start;
+        return SUCCESS;
       },
       run: function (blackboard) {
         ++blackboard.run;

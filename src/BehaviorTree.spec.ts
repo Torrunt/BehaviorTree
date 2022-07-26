@@ -104,6 +104,7 @@ describe('BehaviorTree', () => {
       const tree = new Task({
         start: function (blackboard) {
           ++blackboard.start;
+          return blackboard.result;
         },
         run: function (blackboard) {
           ++blackboard.run;
@@ -156,6 +157,7 @@ describe('BehaviorTree', () => {
       const tree = new Task({
         start: function (blackboard) {
           ++blackboard.start;
+          return blackboard.result;
         },
         run: function (blackboard) {
           ++blackboard.run;
@@ -333,6 +335,7 @@ describe('BehaviorTree', () => {
       const task1 = new Task({
         start: function (blackboard) {
           ++blackboard.start1;
+          return SUCCESS;
         },
         end: function (blackboard) {
           ++blackboard.end1;
@@ -345,6 +348,7 @@ describe('BehaviorTree', () => {
       const task2 = new Task({
         start: function (blackboard) {
           ++blackboard.start2;
+          return SUCCESS;
         },
         end: function (blackboard) {
           ++blackboard.end2;
@@ -357,6 +361,7 @@ describe('BehaviorTree', () => {
       const task3 = new Task({
         start: function (blackboard) {
           ++blackboard.start3;
+          return SUCCESS;
         },
         end: function (blackboard) {
           ++blackboard.end3;
@@ -370,6 +375,7 @@ describe('BehaviorTree', () => {
       const decoratedTask2 = new Decorator({
         start: function (blackboard) {
           ++blackboard.startDeco;
+          return SUCCESS;
         },
         end: function (blackboard) {
           ++blackboard.endDeco;
@@ -380,6 +386,7 @@ describe('BehaviorTree', () => {
       const sequence = new Sequence({
         start: function (blackboard) {
           ++blackboard.startSeq;
+          return SUCCESS;
         },
         end: function (blackboard) {
           ++blackboard.endSeq;
@@ -482,6 +489,7 @@ describe('BehaviorTree', () => {
           } else {
             blackboard.result[`${name}start`] = 1;
           }
+          return SUCCESS;
         },
         end: function (blackboard) {
           if (blackboard.result[`${name}end`]) {

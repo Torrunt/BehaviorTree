@@ -14,7 +14,8 @@ export type Blackboard = Record<string, any>;
 export type DecoratorConfig = Record<string, any>;
 export type EndCallback = (...args: any[]) => void;
 export type RunCallback = (...args: any[]) => Status;
-export type StartCallback = (...args: any[]) => void;
+export type StartCallback = (...args: any[]) => Status;
+export type AbortCallback = (...args: any[]) => void;
 export type RegistryLookUp = (node: NodeOrRegistration) => Node;
 
 export interface IntrospectionResult {
@@ -32,6 +33,7 @@ export interface MinimalBlueprint {
   introspector?: Introspector;
   run?: RunCallback;
   start?: StartCallback;
+  abort?: AbortCallback;
   nodes?: NodeOrRegistration[];
   node?: NodeOrRegistration;
 }
@@ -41,6 +43,7 @@ export interface Blueprint {
   introspector?: Introspector;
   run: RunCallback;
   start: StartCallback;
+  abort: AbortCallback;
   nodes?: NodeOrRegistration[];
   node?: NodeOrRegistration;
 }
@@ -68,4 +71,15 @@ export interface ImportableJson {
   name?: string;
   node?: ImportableJson;
   nodes?: ImportableJson[];
+}
+
+export enum ObserverAborts {
+  /** Do not abort anything. */
+  None,
+  /** Abort self and any sub-trees running under this node. */
+  Self,
+  /** Abort any nodes after this node. */
+  LowerPriority,
+  /** Abort self, any sub-trees running under this node, and any nodes after this node. */
+  Both
 }
