@@ -64,7 +64,8 @@ export default class BranchNode extends Node {
         } else {
           const activeNode = registryLookUp(this.nodes[startingIndex]);
           activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
-          startingIndex = 0;
+          rerun = false
+          startingIndex = 0
         }
       }
 
