@@ -62,7 +62,7 @@ export default class BranchNode extends Node {
             results[currentIndex] = lastRunStates[currentIndex];
             continue;
           }
-        } else {
+        } else if (node.observerAborts !== ObserverAborts.LowerPriority || currentIndex !== startingIndex) {
           const activeNode = registryLookUp(this.nodes[startingIndex]);
           activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
           rerun = false;
