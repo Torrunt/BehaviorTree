@@ -50,11 +50,12 @@ export default class BranchNode extends Node {
       }
 
       const node = registryLookUp(this.nodes[currentIndex]);
+      const nodeConditionResult = IsDecorator(node) ? node.condition(blackboard) : false;
 
       // Re-evaulate observered decorators
       if (observeredDecorator && IsDecorator(node)) {
         const lastState = this.observedDecorators.get(currentIndex);
-        const currentState = node.condition(blackboard);
+        const currentState = nodeConditionResult;
         if (lastState === currentState) {
           if (rerun && currentIndex < startingIndex) {
             // observered decorator hasn't changed - Keep last result
@@ -64,8 +65,8 @@ export default class BranchNode extends Node {
         } else {
           const activeNode = registryLookUp(this.nodes[startingIndex]);
           activeNode.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
-          rerun = false
-          startingIndex = 0
+          rerun = false;
+          startingIndex = 0;
         }
       }
 
@@ -73,7 +74,7 @@ export default class BranchNode extends Node {
       results[currentIndex] = result;
 
       if (IsDecorator(node) && node.observerAborts > ObserverAborts.None) {
-        this.observedDecorators.set(currentIndex, node.condition(blackboard));
+        this.observedDecorators.set(currentIndex, nodeConditionResult);
       }
 
       if (result === RUNNING || typeof result === 'object') {
