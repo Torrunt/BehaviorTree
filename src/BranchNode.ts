@@ -103,10 +103,14 @@ export default class BranchNode extends Node {
 
     // Call abort() on currently active node
     const lastRunStates: Array<RunResult> = (typeof lastRun === 'object' && lastRun.state) || [];
-    const startingIndex = Math.max(
-      lastRunStates.findIndex((x) => isRunning(x)),
-      0
-    );
+    if (lastRunStates.length === 0) {
+      console.log("Warning: Called abort on empty run states.")
+    }
+    let startingIndex: number = lastRunStates.findIndex(isRunning)
+    if (startingIndex === -1) {
+      console.log("Warning: Called abort on a branch node that has no running nodes.")
+      startingIndex = 0
+    }
     const node = registryLookUp(this.nodes[startingIndex]);
     node.abort(blackboard, { registryLookUp, lastRun: lastRunStates[startingIndex] });
   }
